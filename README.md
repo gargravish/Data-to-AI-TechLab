@@ -59,25 +59,26 @@ $ python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 ```
 ## (C1) Step 3: EDA of transaction data in BigQuery
 
-A.Transaction data summary statistics
-B. Fraud Classification counts and percentages
-C. Plot transaction amount distribution
-D. Analyse customer-level aggregates of transaction data
-E. Customer and Terminal Analysis
+- Transaction data summary statistics
+- Fraud Classification counts and percentages
+- Plot transaction amount distribution
+- Analyse customer-level aggregates of transaction data
+- Customer and Terminal Analysis
 
 ## (C2) Step 4: Feature Engineering
 
 Focus on implementing three feature types (use Python or BQ for the same):
-A. Transaction Amount Patterns
-B. Time-based patterns
-C. Merchant Risk Scoring
+- Transaction Amount Patterns
+- Time-based patterns
+- Merchant Risk Scoring
+- Combine all features
 
 ## (C3) Step 5: Model Development (BigQuery ML)
 
 Focus on simple but effective model:
-Use Random Forest Classifier
-Implement cross-validation
-Calculate key metrics (AUC-ROC, Precision, Recall)
+- Use Random Forest Classifier
+- Implement cross-validation
+- Calculate key metrics (AUC-ROC, Precision, Recall)
 
 ## (C4) Step 6: Real-time Inference
 
