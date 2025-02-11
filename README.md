@@ -80,6 +80,6 @@ Focus on simple but effective model:
 - Implement cross-validation
 - Calculate key metrics (AUC-ROC, Precision, Recall)
 
-## (C4) Step 6: Real-time Inference
+## (C4) Step 6: Model Inference
 
 
