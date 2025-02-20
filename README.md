@@ -88,5 +88,19 @@ Focus on simple but effective model:
 ![image](./images/fraud_finder_graph.png)
 
 ## (C4) Step 7: Model Inference
-
-
+### Create BigQuery Table for online predictions
+```sql
+CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
+(
+  TX_ID STRING,
+  prediction_timestamp TIMESTAMP,
+  fraud_probability FLOAT64,
+  is_fraud BOOLEAN,
+  model_version STRING,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+### Deploy the model for online predictions
+![image](./images/VertexAI_Model_Deploy.png)
+- Get the VertexAI Endpoint ID
+- Copy the "./C4-Real-Time Inference/fraud_online_inference.py" for online predictions to BigQuery Notebook and fill-in the required configurations.
