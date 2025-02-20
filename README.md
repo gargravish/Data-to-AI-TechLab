@@ -8,7 +8,7 @@ Please make sure that you have selected a Google Cloud project as shown below: i
 ## Step 1: Initial setup using Cloud Shell
 Activate Cloud Shell in your project by clicking the Activate Cloud Shell button as shown in the image below. 
 
-<image>
+![image](./images/activate-cloud-shell.png)
 
 Once the Cloud Shell has activated, copy the following codes and execute them in the Cloud Shell to enable the necessary APIs, and create Pub/Sub subscriptions to read streaming transactions from public Pub/Sub topics.
 
@@ -27,7 +27,6 @@ gcloud services enable artifactregistry.googleapis.com
 gcloud services enable iam.googleapis.com
 
 gcloud pubsub subscriptions create "ff-tx-sub" --topic="ff-tx" --topic-project="cymbal-fraudfinder"
-gcloud pubsub subscriptions create "ff-tx-for-feat-eng-sub" --topic="ff-tx" --topic-project="cymbal-fraudfinder"
 gcloud pubsub subscriptions create "ff-txlabels-sub" --topic="ff-txlabels" --topic-project="cymbal-fraudfinder"
 
 # Run the following command to grant the Compute Engine default service account access to read and write pipeline artifacts in Google Cloud Storage.
@@ -57,7 +56,13 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 ```shell
 $ python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 ```
-## (C1) Step 3: EDA of transaction data in BigQuery
+## Step 3: Create BigQuery tables for realtime streaming data and Pub/Sub to BQ subscription
+```sql
+create table `{PROJECT_ID}.{Dataset_ID}.txlabels_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.txlabels.txlabels` where 1=0;
+
+create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.tx` where 1=0;
+```
+## (C1) Step 4: EDA of transaction data in BigQuery
 
 - Transaction data summary statistics
 - Fraud Classification counts and percentages
@@ -65,7 +70,7 @@ $ python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 - Analyse customer-level aggregates of transaction data
 - Customer and Terminal Analysis
 
-## (C2) Step 4: Feature Engineering
+## (C2) Step 5: Feature Engineering
 
 Focus on implementing three feature types (use Python or BQ for the same):
 - Transaction Amount Patterns
@@ -73,13 +78,15 @@ Focus on implementing three feature types (use Python or BQ for the same):
 - Merchant Risk Scoring
 - Combine all features
 
-## (C3) Step 5: Model Development (BigQuery ML)
+## (C3) Step 6: Model Development (BigQuery ML)
 
 Focus on simple but effective model:
 - Use Random Forest Classifier
 - Implement cross-validation
 - Calculate key metrics (AUC-ROC, Precision, Recall)
 
-## (C4) Step 6: Model Inference
+![image](./images/fraud_finder_graph.png)
+
+## (C4) Step 7: Model Inference
 
 
