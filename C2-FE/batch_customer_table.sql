@@ -1,0 +1,66 @@
+DECLARE YESTERDAY DATE DEFAULT DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY);
+DECLARE DATAPROCESSING_END_DATE DATE DEFAULT YESTERDAY;
+
+CREATE OR REPLACE TABLE `PROJECT_ID.DATASET_ID.TABLE_ID` AS --- UPDATE RELEVANT TABLE_ID
+WITH
+  -- query to join labels with features -------------------------------------------------------------------------------------------
+  get_raw_table AS (
+  SELECT
+    raw_tx.TX_TS,
+    raw_tx.TX_ID,
+    raw_tx.CUSTOMER_ID,
+    raw_tx.TERMINAL_ID,
+    raw_tx.TX_AMOUNT,
+    raw_lb.TX_FRAUD
+  FROM (
+    SELECT
+      *
+    FROM
+      `PROJECT_ID.TX.TX` --- UPDATE PROJECT_ID
+    WHERE
+      DATE(TX_TS) BETWEEN DATE_SUB(DATAPROCESSING_END_DATE, INTERVAL 15 DAY) AND DATAPROCESSING_END_DATE
+    ) raw_tx
+  LEFT JOIN 
+    `PROJECT_ID.tx.txlabels` as raw_lb --- UPDATE PROJECT_ID
+  ON raw_tx.TX_ID = raw_lb.TX_ID),
+
+  -- query to calculate CUSTOMER spending behaviour --------------------------------------------------------------------------------
+  get_customer_spending_behaviour AS (
+  SELECT
+    TX_TS,
+    TX_ID,
+    CUSTOMER_ID,
+    TERMINAL_ID,
+    TX_AMOUNT,
+    TX_FRAUD,
+    
+    # calc the number of customer tx over daily windows per customer (1, 7 and 14 days, expressed in seconds)
+    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 86400 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_1DAY_WINDOW,
+    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 604800 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_7DAY_WINDOW,
+    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1209600 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_14DAY_WINDOW,
+      
+    # calc the customer average tx amount over daily windows per customer (1, 7 and 14 days, expressed in seconds, in dollars ($))
+    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 86400 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW,
+    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 604800 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW,
+    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1209600 PRECEDING
+      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW,
+  FROM get_raw_table)
+
+# Create the table with CUSTOMER features ----------------------------------------------------------------------------
+SELECT
+  PARSE_TIMESTAMP("%Y-%m-%d %H:%M:%S", FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", TX_TS, "UTC")) AS feature_ts,
+  CUSTOMER_ID AS customer_id,
+  CAST(CUSTOMER_ID_NB_TX_1DAY_WINDOW AS INT64) AS customer_id_nb_tx_1day_window,
+  CAST(CUSTOMER_ID_NB_TX_7DAY_WINDOW AS INT64) AS customer_id_nb_tx_7day_window,
+  CAST(CUSTOMER_ID_NB_TX_14DAY_WINDOW AS INT64) AS customer_id_nb_tx_14day_window,
+  CAST(CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_1day_window,
+  CAST(CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_7day_window,
+  CAST(CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_14day_window,
+FROM
+  get_customer_spending_behaviour
+;
