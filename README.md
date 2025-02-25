@@ -72,11 +72,47 @@ create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_
 
 ## (C2) Step 5: Feature Engineering
 
-Focus on implementing three feature types (use Python or BQ for the same):
-- Transaction Amount Patterns
-- Time-based patterns
-- Merchant Risk Scoring
-- Combine all features
+### Objective
+The goal of this step is to create features, based on historical customer behaviour and historical terminal activities. These features will be batch-generated using SQL in BigQuery, where the historical data is stored.
+
+### Data Context
+
+The source dataset contains transaction information including transaction ID, timestamps, customer ID, terminal ID, transaction amounts and fraud labels. The relevant tables for this section are:
+* ``` tx.tx (tx.tx_realtime) ```
+* ``` tx.txlabels (tx.txlabels_realtime) ```
+
+### Task
+
+Write SQL queries to compute 2 sets of features:
+
+**Query 1: Customer-related features:** describes the spending behaviour of customer within (a) 15, 30 and 60 mins time windows and (b) 1, 7 and 14 days time windows using ***number of transactions*** and ***average amount spent*** in dollars ($).
+
+* Complete the customer feature SQL query in the folder ``` C2-FE ```
+
+Below is the expected output for this query:
+
+| feature_time             | customer_id | customer features |
+| :------------------------- | :---------- | :----------------------- |
+| 2025-02-01 17:20:15 UTC   | 1           | (e.g., nb_tx, avg_tx)   |
+| 2025-02-02 12:08:40 UTC   | 2           | (e.g., nb_tx, avg_tx)   |
+| 2025-02-03 17:30:48 UTC   | 3           | (e.g., nb_tx, avg_tx)   |
+
+**Query 2: Terminal-related features:** describes the risk of a given terminal to be exposed to fraudulent transactions within the last (a) 15, 30 and 60 mins and (b) 1, 7 and 14 days using ***average number of fraudulent transactions*** in dollars ($), the ***number of transactions*** and ***risk index***. Please note that a delay will need to be added to take into account time that would pass between the time of transaction and the result of fraud investigation or customer claim.
+
+* Complete the transaction feature SQL query in the folder ``` C2-FE ```
+
+Below is the expected output for this query:
+
+| feature_time             | terminal_id | terminal features |
+| :------------------------- | :---------- | :----------------------- |
+| 2025-02-01 17:20:15 UTC   | 12345       | (e.g., risk_x_days)     |
+| 2025-02-02 12:08:40 UTC   | 26789       | (e.g., risk_x_days)     |
+| 2025-02-03 17:30:48 UTC   | 101112      | (e.g., risk_x_days)     |
+
+**Verify your results by running** 
+```sql 
+SELECT * FROM <TABLE> LIMIT 10
+```
 
 ## (C3) Step 6: Model Development (BigQuery ML)
 
