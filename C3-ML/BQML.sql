@@ -342,21 +342,21 @@ SELECT
   FROM
     UNNEST(CLUSTER)
   WHERE
-    name = 'terminal_id_avg_amount_15min_window') AS terminal_id_avg_amount_15min_window,
+    name = 'terminal_id_risk_15min_window') AS terminal_id_avg_amount_15min_window,
   (
   SELECT
     value
   FROM
     UNNEST(CLUSTER)
   WHERE
-    name = 'terminal_id_avg_amount_30min_window') AS terminal_id_avg_amount_30min_window,
+    name = 'terminal_id_risk_30min_window') AS terminal_id_avg_amount_30min_window,
   (
   SELECT
     value
   FROM
     UNNEST(CLUSTER)
   WHERE
-    name = 'terminal_id_avg_amount_60min_window') AS terminal_id_avg_amount_60min_window
+    name = 'terminal_id_risk_60min_window') AS terminal_id_avg_amount_60min_window
 FROM
   T
 ORDER BY
