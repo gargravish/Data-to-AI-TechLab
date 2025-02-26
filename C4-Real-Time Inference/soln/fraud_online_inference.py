@@ -14,10 +14,10 @@ from google.colab import auth
 auth.authenticate_user()
 
 # Configuration
-PROJECT_ID = "raves-altostrat"
-SUBSCRIPTION_PATH = "projects/raves-altostrat/subscriptions/ff-tx-sub"
+PROJECT_ID = "{PROJECT_ID}"
+SUBSCRIPTION_PATH = "projects/{PROJECT_ID}/subscriptions/ff-tx-sub"
 LOCATION = "us-central1"
-ENDPOINT_ID = "3040498195986644992"
+ENDPOINT_ID = "{ENDPOINT_ID}"
 DATASET_ID = "tx"
 BQ_TABLE = f"{PROJECT_ID}.{DATASET_ID}.online_fraud_prediction"
 
