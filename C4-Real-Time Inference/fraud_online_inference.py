@@ -9,16 +9,12 @@ from datetime import datetime
 import time
 from decimal import Decimal
 
-# Authentication (run this if not already authenticated)
-from google.colab import auth
-auth.authenticate_user()
-
 # Configuration
 PROJECT_ID = "{PROJECT_ID}"
 SUBSCRIPTION_PATH = "projects/{PROJECT_ID}/subscriptions/ff-tx-sub"
-LOCATION = "us-central1"
+LOCATION = "{LOCATION}"
 ENDPOINT_ID = "{ENDPOINT_ID}"
-DATASET_ID = "tx"
+DATASET_ID = "{DATASET_ID}"
 BQ_TABLE = f"{PROJECT_ID}.{DATASET_ID}.online_fraud_prediction"
 
 # Initialize clients
@@ -72,35 +68,22 @@ class FraudDetectionProcessor:
                 feature_ts,
                 customer_id_nb_tx_15min_window,
                 customer_id_avg_amount_15min_window,
-                customer_id_nb_tx_30min_window,
-                customer_id_avg_amount_30min_window,
-                customer_id_nb_tx_60min_window,
-                customer_id_avg_amount_60min_window,
-                customer_id_nb_tx_1day_window,
-                customer_id_avg_amount_1day_window,
-                customer_id_nb_tx_7day_window,
-                customer_id_avg_amount_7day_window,
-                customer_id_nb_tx_14day_window,
-                customer_id_avg_amount_14day_window,
+                ...
                 ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY feature_ts DESC) as rn
             FROM `{PROJECT_ID}.{DATASET_ID}.customer_spending_features`
-            WHERE customer_id = @customer_id
-            AND feature_ts <= (SELECT tx_timestamp FROM transaction_data)
+            WHERE customer_id = {}
+            AND feature_ts <= {}
         ),
         terminal_features AS (
             SELECT
                 terminal_id,
                 feature_ts,
                 terminal_id_nb_tx_1day_window,
-                terminal_id_risk_1day_window,
-                terminal_id_nb_tx_7day_window,
-                terminal_id_risk_7day_window,
-                terminal_id_nb_tx_14day_window,
-                terminal_id_risk_14day_window,
+                ...
                 ROW_NUMBER() OVER (PARTITION BY terminal_id ORDER BY feature_ts DESC) as rn
             FROM `{PROJECT_ID}.{DATASET_ID}.terminal_risk_features`
-            WHERE terminal_id = @terminal_id
-            AND feature_ts <= (SELECT tx_timestamp FROM transaction_data)
+            WHERE terminal_id = {}
+            AND feature_ts <= {}
         )
         SELECT
             /* Use the transaction amount directly with the model's expected name */
@@ -108,17 +91,7 @@ class FraudDetectionProcessor:
 
             /* Customer features - use the exact column names from the training data */
             COALESCE(c.customer_id_nb_tx_15min_window, 0) as customer_id_nb_tx_15min_window,
-            COALESCE(c.customer_id_avg_amount_15min_window, 0) as customer_id_avg_amount_15min_window,
-            COALESCE(c.customer_id_nb_tx_30min_window, 0) as customer_id_nb_tx_30min_window,
-            COALESCE(c.customer_id_avg_amount_30min_window, 0) as customer_id_avg_amount_30min_window,
-            COALESCE(c.customer_id_nb_tx_60min_window, 0) as customer_id_nb_tx_60min_window,
-            COALESCE(c.customer_id_avg_amount_60min_window, 0) as customer_id_avg_amount_60min_window,
-            COALESCE(c.customer_id_nb_tx_1day_window, 0) as customer_id_nb_tx_1day_window,
-            COALESCE(c.customer_id_avg_amount_1day_window, 0) as customer_id_avg_amount_1day_window,
-            COALESCE(c.customer_id_nb_tx_7day_window, 0) as customer_id_nb_tx_7day_window,
-            COALESCE(c.customer_id_avg_amount_7day_window, 0) as customer_id_avg_amount_7day_window,
-            COALESCE(c.customer_id_nb_tx_14day_window, 0) as customer_id_nb_tx_14day_window,
-            COALESCE(c.customer_id_avg_amount_14day_window, 0) as customer_id_avg_amount_14day_window,
+            ...
 
             /* Terminal features with original column names */
             COALESCE(t.terminal_id_nb_tx_1day_window, 0) as terminal_id_nb_tx_1day_window,
@@ -127,14 +100,7 @@ class FraudDetectionProcessor:
             COALESCE(t.terminal_id_risk_7day_window, 0) as terminal_id_risk_7day_window,
             COALESCE(t.terminal_id_nb_tx_14day_window, 0) as terminal_id_nb_tx_14day_window,
             COALESCE(t.terminal_id_risk_14day_window, 0) as terminal_id_risk_14day_window,
-
-            /* Additional terminal features for shorter windows */
-            0.0 as terminal_id_nb_tx_15min_window,
-            0.0 as terminal_id_risk_15min_window,
-            0.0 as terminal_id_nb_tx_30min_window,
-            0.0 as terminal_id_risk_30min_window,
-            0.0 as terminal_id_nb_tx_60min_window,
-            0.0 as terminal_id_risk_60min_window
+            ...
         FROM transaction_data d
         LEFT JOIN customer_features c ON c.customer_id = d.customer_id AND c.rn = 1
         LEFT JOIN terminal_features t ON t.terminal_id = d.terminal_id AND t.rn = 1
