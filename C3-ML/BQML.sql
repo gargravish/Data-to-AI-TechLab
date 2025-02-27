@@ -1,13 +1,15 @@
---create ground truth table
---use past 15 days as the tran and predict period
+-- Fraud Detection ML Training & Prediction in BigQuery
+-- Time to complete: ~1 hour 15 minutes
+-- Follow the TODOs and hints to prepare train/predict data and create ML models
+
+-- Part 1: Organise Training and Prediction Required Data Tables (? mins)
+
+-- TODO: Create ground truth table
+-- Hint: Pick today's date and go back 15 days as the time coverage
 CREATE OR REPLACE TABLE
   tx.ground_truth AS (
   SELECT
-    raw_tx.TX_TS AS timestamp,
-    raw_tx.CUSTOMER_ID AS customer,
-    raw_tx.TERMINAL_ID AS terminal,
-    raw_tx.TX_AMOUNT AS tx_amount,
-    raw_lb.TX_FRAUD AS tx_fraud,
+    --select required fields
   FROM
     tx.tx AS raw_tx
   LEFT JOIN
@@ -15,67 +17,39 @@ CREATE OR REPLACE TABLE
   ON
     raw_tx.TX_ID = raw_lb.TX_ID
   WHERE
-    DATE(raw_tx.TX_TS) > DATE_SUB(CURRENT_DATE(), INTERVAL 15 DAY)
-    AND DATE(raw_tx.TX_TS) <= CURRENT_DATE());
+    --limit the date range
+    );
 
---create train data by joining the ground truth table with all features
---use first 10 days as the tran period 
+-- TODO: Create training data table
+-- Hint: Include all relevant features from the feature tables 
+-- and use the first 10 days as the training period
 CREATE OR REPLACE TABLE
   tx.train_data AS (
   SELECT
-    * EXCEPT (customer,
-      terminal,
-      feature_ts)
+    --include relevant feature fields
   FROM
     tx.ground_truth AS gt
-  LEFT JOIN
-    tx.customers_features AS customer
-  ON
-    gt.customer = customer.customer_id
-    AND gt.timestamp = customer.feature_ts
-  LEFT JOIN
-    tx.terminals_features AS terminal
-  ON
-    gt.terminal = terminal.terminal_id
-    AND gt.timestamp = terminal.feature_ts
+    --join with feature tables
   WHERE
-    DATE(gt.timestamp) <= DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY)
+    --limit date range
   AND tx_fraud IS NOT NULL);
 
---create predict data by joining the ground truth table with all features
---use last 5 days as the predict period 
+-- TODO: Create prediction data table
+-- Hint: Include all relevant features from the feature tables 
+-- and use the last 5 days as the training period
 CREATE OR REPLACE TABLE
   tx.predict_data AS (
-  SELECT
-    * EXCEPT (customer,
-      terminal,
-      feature_ts)
-  FROM
-    tx.ground_truth AS gt
-  LEFT JOIN
-    tx.customers_features AS customer
-  ON
-    gt.customer = customer.customer_id
-    AND gt.timestamp = customer.feature_ts
-  LEFT JOIN
-    tx.terminals_features AS terminal
-  ON
-    gt.terminal = terminal.terminal_id
-    AND gt.timestamp = terminal.feature_ts
-  WHERE
-    DATE(gt.timestamp) > DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY)
-  AND tx_fraud IS NOT NULL);
+    --complete sql script
+);
 
+-- Part 2: Carry Out Model Training, Evaluation and Prediction through Three Different Model Approaches (? mins)
 
---use logistic regression model
+-- TODO: Create a logistic regression model
+-- Hint: Pick 'LOGISTIC_REG' model type, register the model in Vertex AI
 CREATE OR REPLACE MODEL
-  tx.fraud_detection_logreg OPTIONS( MODEL_TYPE="LOGISTIC_REG",
-    INPUT_LABEL_COLS=["tx_fraud"],
-    EARLY_STOP=TRUE,
-    MIN_REL_PROGRESS=0.01,
-    model_registry="vertex_ai",
-    vertex_ai_model_version_aliases=['logreg',
-    'experimental'] ) AS
+  tx.fraud_detection_logreg OPTIONS(
+    --specify model options
+  ) AS
 SELECT
   * EXCEPT(timestamp,
     customer_id,
@@ -83,41 +57,25 @@ SELECT
 FROM
   tx.train_data
 
---evaluate logreg model
+-- TODO: Evaluate the model created above
 SELECT
   *
 FROM
-  ML.EVALUATE (MODEL `tx.fraud_detection_logreg`);
+  --call evaluate function;
 
---predict fraud using logreg model
+-- TODO: Run predictions using the model created above
 SELECT
   *
 FROM
-  ML.PREDICT (MODEL `tx.fraud_detection_logreg`,
-    (
-    SELECT
-      *
-    FROM
-      tx.predict_data));
+  --call predict function;
     
+-- TODO: Create a xgboost model
+-- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, register the model in Vertex AI    
 --use xgboost model
 CREATE OR REPLACE MODEL
-  tx.fraud_detection_xgboost OPTIONS( model_type='BOOSTED_TREE_CLASSIFIER',
-    input_label_cols=['tx_fraud'],
-    num_parallel_tree=1,
-    max_tree_depth=6,
-    tree_method='hist',
-    max_iterations=50,
-    enable_global_explain=TRUE,
-    learn_rate=0.1,
-    early_stop=TRUE,
-    l1_reg=0.1,
-    l2_reg=0.1,
-    subsample=0.8,
-    colsample_bytree =0.8,
-    model_registry="vertex_ai",
-    vertex_ai_model_version_aliases=['xgboost',
-    'experimental'] ) AS
+  tx.fraud_detection_xgboost OPTIONS(
+    --specify model options
+  ) AS
 SELECT
   * EXCEPT (timestamp,
     customer_id,
@@ -125,34 +83,32 @@ SELECT
 FROM
   tx.train_data;
 
---evaluate xgboost model
+-- TODO: Evaluate the model created above
 SELECT
   *
 FROM
-  ML.EVALUATE (MODEL `tx.fraud_detection_xgboost`);
+  --call evaluate function;
 
---explain feature attributions
+
+-- TODO: Explain model feature attributions
 SELECT
   *
 FROM
-  ML.GLOBAL_EXPLAIN (MODEL `tx.fraud_detection_xgboost`);
+  --call explain function;
 
---predict using xgboost model
+-- TODO: Run predictions using the model created above
 SELECT
   *
 FROM
-  ML.PREDICT (MODEL `tx.fraud_detection_xgboost`,
-    (
-    SELECT
-      *
-    FROM
-      tx.predict_data));
+  --call predict function);
 
---create kmeans model with 8 clusters
+
+-- TODO: Create a kmeans clutering model
+-- Hint: Use 'kmeans' as the model type, decide how many clusters you will allocate
 CREATE OR REPLACE MODEL
-  tx.fraud_detection_kmeans OPTIONS( MODEL_TYPE = 'kmeans',
-    NUM_CLUSTERS = 8,
-    KMEANS_INIT_METHOD = 'kmeans++' ) AS
+  tx.fraud_detection_kmeans OPTIONS(
+    --specify model options
+  ) AS
 SELECT
   * EXCEPT (timestamp,
     tx_fraud,
@@ -161,25 +117,25 @@ SELECT
 FROM
   tx.train_data;
 
---evaluate kmeans model
+-- TODO: Evaluate the model created above
 SELECT
   davies_bouldin_index
 FROM
-  ML.EVALUATE(MODEL `tx.fraud_detection_kmeans`);
+  --call evaluate function;
 
---display cluster characteristics
+--[Optional]
+-- TODO: List out the feature characteristics for each cluster centroid
 WITH
   T AS (
   SELECT
     centroid_id,
-    ARRAY_AGG(STRUCT(feature AS name,
-        ROUND(numerical_value,1) AS value)
+    --create an array of structs containing the feature name and rounded numerical value.
     ORDER BY
       centroid_id) AS CLUSTER
   FROM
-    ML.CENTROIDS(MODEL `tx.fraud_detection_kmeans`)
+    ML.CENTROIDS(MODEL `your_model_name`)
   GROUP BY
-    centroid_id )
+    centroid_id)
 SELECT
   CONCAT('Cluster#', CAST(centroid_id AS STRING)) AS centroid,
   (
@@ -363,14 +319,8 @@ ORDER BY
   centroid_id ASC;
 
 
---detect anomalies/fraud using kmeans model
+-- TODO: Run anomaly/fraud detection based on the clustering model created above
 SELECT
   *
 FROM
-  ML.DETECT_ANOMALIES( MODEL `tx.fraud_detection_kmeans`,
-    STRUCT(0.02 AS contamination),
-    (
-    SELECT
-      *
-    FROM
-      tx.predict_data));
+  --call detect anomaly function;
