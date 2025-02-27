@@ -1,13 +1,3 @@
-<<<<<<< HEAD
--- Ground Truth Table Creation
-CREATE OR REPLACE TABLE tx.ground_truth AS (
-  SELECT
-    t.TX_TS AS timestamp,
-    t.CUSTOMER_ID AS customer_id,
-    t.TERMINAL_ID AS terminal_id,
-    t.TX_AMOUNT AS tx_amount,
-    l.TX_FRAUD AS tx_fraud
-=======
 -- Fraud Detection ML Training & Prediction in BigQuery
 -- Time to complete: ~1 hour 15 minutes
 -- Follow the TODOs and hints to prepare train/predict data and create ML models
@@ -20,144 +10,13 @@ CREATE OR REPLACE TABLE
   tx.ground_truth AS (
   SELECT
     --select required fields
->>>>>>> 47edb3179e4b149e3f207ef0a988f94169e61129
   FROM
-    tx.{TABLE_NAME} AS t
+    tx.tx AS raw_tx
   LEFT JOIN
-    tx.{TABLE_NAME} AS l
+    tx.txlabels AS raw_lb
   ON
-    t.TX_ID = l.TX_ID
+    raw_tx.TX_ID = raw_lb.TX_ID
   WHERE
-<<<<<<< HEAD
-    DATE(t.TX_TS) > DATE_SUB("2025-08-28", INTERVAL 15 DAY)
-    AND DATE(t.TX_TS) <= "2025-08-28"
-);
-
--- Training Data Creation
-CREATE OR REPLACE TABLE tx.train_data AS (
-  SELECT
-    gt.timestamp,
-    gt.tx_amount,
-    
-    -- Customer features
-    cf.customer_id_nb_tx_15min_window,
-    cf.customer_id_avg_amount_15min_window,
-    cf.customer_id_nb_tx_30min_window,
-    cf.customer_id_avg_amount_30min_window,
-    cf.customer_id_nb_tx_60min_window,
-    cf.customer_id_avg_amount_60min_window,
-    cf.customer_id_nb_tx_1day_window,
-    cf.customer_id_avg_amount_1day_window,
-    cf.customer_id_nb_tx_7day_window,
-    cf.customer_id_avg_amount_7day_window,
-    cf.customer_id_nb_tx_14day_window,
-    cf.customer_id_avg_amount_14day_window,
-    
-    -- Terminal features
-    gt.terminal_id,
-    tf.terminal_id_nb_tx_15min_window,
-    tf.terminal_id_risk_15min_window,
-    tf.terminal_id_nb_tx_30min_window,
-    tf.terminal_id_risk_30min_window,
-    tf.terminal_id_nb_tx_60min_window,
-    tf.terminal_id_risk_60min_window,
-    tf.terminal_id_nb_tx_1day_window,
-    tf.terminal_id_risk_1day_window,
-    tf.terminal_id_nb_tx_7day_window,
-    tf.terminal_id_risk_7day_window,
-    tf.terminal_id_nb_tx_14day_window,
-    tf.terminal_id_risk_14day_window,
-    
-    -- Label
-    gt.{LABEL_NAME}
-  FROM
-    tx.{ground_truth} AS gt
-  LEFT JOIN
-    tx.customer_spending_features AS cf
-  ON
-    gt.customer_id = cf.customer_id
-    AND gt.timestamp = cf.feature_ts
-  LEFT JOIN
-    tx.terminal_risk_features AS tf
-  ON
-    gt.terminal_id = tf.terminal_id
-    AND gt.timestamp = tf.feature_ts
-  WHERE
-    DATE(gt.timestamp) <= DATE_SUB("2025-08-28", INTERVAL 5 DAY)
-    AND gt.tx_fraud IS NOT NULL
-);
-
--- Prediction Data Creation
-CREATE OR REPLACE TABLE tx.predict_data AS (
-  SELECT
-    gt.timestamp,
-    gt.tx_amount,
-    
-    -- Customer features
-    cf.customer_id_nb_tx_15min_window,
-    cf.customer_id_avg_amount_15min_window,
-    cf.customer_id_nb_tx_30min_window,
-    cf.customer_id_avg_amount_30min_window,
-    cf.customer_id_nb_tx_60min_window,
-    cf.customer_id_avg_amount_60min_window,
-    cf.customer_id_nb_tx_1day_window,
-    cf.customer_id_avg_amount_1day_window,
-    cf.customer_id_nb_tx_7day_window,
-    cf.customer_id_avg_amount_7day_window,
-    cf.customer_id_nb_tx_14day_window,
-    cf.customer_id_avg_amount_14day_window,
-    
-    -- Terminal features
-    gt.terminal_id,
-    tf.terminal_id_nb_tx_15min_window,
-    tf.terminal_id_risk_15min_window,
-    tf.terminal_id_nb_tx_30min_window,
-    tf.terminal_id_risk_30min_window,
-    tf.terminal_id_nb_tx_60min_window,
-    tf.terminal_id_risk_60min_window,
-    tf.terminal_id_nb_tx_1day_window,
-    tf.terminal_id_risk_1day_window,
-    tf.terminal_id_nb_tx_7day_window,
-    tf.terminal_id_risk_7day_window,
-    tf.terminal_id_nb_tx_14day_window,
-    tf.terminal_id_risk_14day_window,
-    
-    -- Label
-    gt.tx_fraud
-  FROM
-    tx.ground_truth AS gt
-  LEFT JOIN
-    tx.customer_spending_features AS cf
-  ON
-    gt.customer_id = cf.customer_id
-    AND gt.timestamp = cf.feature_ts
-  LEFT JOIN
-    tx.terminal_risk_features AS tf
-  ON
-    gt.terminal_id = tf.terminal_id
-    AND gt.timestamp = tf.feature_ts
-  WHERE
-    DATE(gt.timestamp) > DATE_SUB("2025-08-28", INTERVAL 5 DAY)
-    AND gt.tx_fraud IS NOT NULL
-);
-
--- LogReg BQML Model
-CREATE OR REPLACE MODEL tx.fraud_detection_logreg
-OPTIONS(
-  model_type = 'LOGISTIC_REG',
-  input_label_cols = ['tx_fraud'],
-  early_stop = TRUE,
-  min_rel_progress = 0.01,
-  model_registry = "VERTEX_AI",
-  vertex_ai_model_version_aliases = ['logistic_reg', 'fraud_models'],
-  enable_global_explain = TRUE
-) AS
-SELECT
-  * EXCEPT(timestamp, terminal_id)
-FROM
-  tx.train_data;
-
-=======
     --limit the date range
     );
 
@@ -212,7 +71,6 @@ FROM
     
 -- TODO: Create a xgboost model
 -- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, register the model in Vertex AI    
->>>>>>> 47edb3179e4b149e3f207ef0a988f94169e61129
 --use xgboost model
 CREATE OR REPLACE MODEL
   tx.fraud_detection_xgboost OPTIONS(
