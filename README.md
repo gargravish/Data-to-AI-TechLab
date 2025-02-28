@@ -115,13 +115,38 @@ SELECT * FROM <TABLE> LIMIT 10
 ```
 
 ## Step 3: Model Development with BigQuery ML (C3)
+### Objective
+After feature engineering, you are now ready to train and deploy your machine learning model to predict whether a transaction is fraudulent or not. You will train with BigQuery ML, register the model to Vertex AI Model Registry before you deploy it to an endpoint for real-time prediction.
 
-Focus on simple but effective model:
-- Use Random Forest Classifier
-- Implement cross-validation
-- Calculate key metrics (AUC-ROC, Precision, Recall)
+### Approach
+Here's a quick breakdown the models supported in BigQuery ML, for the fraud detection use case, you will go through two different model approaches:
+* Supervised learning - use Logistic Regression and Boosted Tree Classifer to predict fraud labels
+* Unsupervised learning - use Kmeans as part of the anomaly detection function in BigQuery to spot outliers
+![image](./images/ml-model-cheatsheet.svg)
 
-![image](./images/fraud_finder_graph.png)
+### Task
+In this step, you will write sql queries to perform the following tasks in [C3-ML](https://github.com/gargravish/Data-to-AI-TechLab/blob/main/C3-ML/BQML.sql):
+
+* Create a grouth truth table with the fraud labels
+* Join back both the customer-related and terminal risk features to the grouth truth table, narrow down the time period to the past 15 days and split the first 10 days for training and remaining 5 days for testing
+* Use the supervised learning approach
+  * train a logistic regression model in BigQuery and register the model in Vertex AI
+  * evaluate model metrics and run test prediction
+  * train a xgboost model in BigQuery and register the model in Vertex AI
+  * evaluate model metrics and run test prediction
+* Use the unsupervised learning approach
+  * train a kmeans model in BigQuery
+  * feed the model into the anomaly detection function in BigQuery for testing purposes
+
+### Resource
+[Logistic Regression Model](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-create-glm)
+
+[Boosted Trees Model](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-create-boosted-tree)
+
+[Kmeans Model](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-create-kmeans)
+
+[ML.DETECT_ANOMALIES Function](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-detect-anomalies)
+
 
 ## Step 4 : Real Time Model Inference (C4)
 ### Create BigQuery Table for online predictions
