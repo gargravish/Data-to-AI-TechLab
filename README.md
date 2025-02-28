@@ -1,11 +1,11 @@
 # Data-to-AI-TechLab
 ## GCP Data to AI Tech Lab Challenge (fraudfinder)
 
-
-## Step 0: Select your Google Cloud project
+## Step 0: Initalisation and Setup
+### Select your Google Cloud project
 Please make sure that you have selected a Google Cloud project as shown below: image
 
-## Step 1: Initial setup using Cloud Shell
+### Initial setup using Cloud Shell
 Activate Cloud Shell in your project by clicking the Activate Cloud Shell button as shown in the image below. 
 
 ![image](./images/activate-cloud-shell.png)
@@ -52,17 +52,17 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
       --role='roles/storage.objectAdmin'   
 ```
 
-## Step 2: Copy the historical transaction data into BigQuery tables
+### Copy the historical transaction data into BigQuery tables
 ```shell
 $ python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 ```
-## Step 3: Create BigQuery tables for realtime streaming data and Pub/Sub to BQ subscription
+### Create BigQuery tables for realtime streaming data and Pub/Sub to BQ subscription
 ```sql
 create table `{PROJECT_ID}.{Dataset_ID}.txlabels_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.txlabels.txlabels` where 1=0;
 
 create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.tx` where 1=0;
 ```
-## (C1) Step 4: EDA of transaction data in BigQuery
+## Step 1: EDA of transaction data in BigQuery (C1)
 
 - Transaction data summary statistics
 - Fraud Classification counts and percentages
@@ -70,7 +70,7 @@ create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_
 - Analyse customer-level aggregates of transaction data
 - Customer and Terminal Analysis
 
-## (C2) Step 5: Feature Engineering
+## Step 2: Feature Engineering (C2)
 
 ### Objective
 The goal of this step is to create features, based on historical customer behaviour and historical terminal activities. These features will be batch-generated using SQL in BigQuery, where the historical data is stored.
@@ -114,7 +114,7 @@ Below is the expected output view for this query:
 SELECT * FROM <TABLE> LIMIT 10
 ```
 
-## (C3) Step 6: Model Development (BigQuery ML)
+## Step 3: Model Development with BigQuery ML (C3)
 
 Focus on simple but effective model:
 - Use Random Forest Classifier
@@ -123,7 +123,7 @@ Focus on simple but effective model:
 
 ![image](./images/fraud_finder_graph.png)
 
-## (C4) Step 7: Model Inference
+## Step 4 : Real Time Model Inference (C4)
 ### Create BigQuery Table for online predictions
 ```sql
 CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
