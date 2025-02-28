@@ -1,6 +1,8 @@
-DECLARE DATAPROCESSING_END_DATE DEFAULT DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY);
+-- Customer Spending Features (batch)
+-- Time to complete: 20 minutes
+-- Follow the TODOs and HINTS to compute customer features from raw data
 
-CREATE OR REPLACE TABLE `PROJECT_ID.DATASET_ID.TABLE_ID` AS --- UPDATE RELEVANT TABLE_ID
+CREATE OR REPLACE view tx.customer_spending_features AS
 WITH
   -- query to join labels with features -------------------------------------------------------------------------------------------
   get_raw_table AS (
@@ -12,16 +14,14 @@ WITH
     raw_tx.TX_AMOUNT,
     raw_lb.TX_FRAUD
   FROM (
-    SELECT
-      *
-    FROM
-      `PROJECT_ID.TX.TX` --- UPDATE PROJECT_ID
-    WHERE
-      DATE(TX_TS) BETWEEN DATE_SUB(DATAPROCESSING_END_DATE, INTERVAL 14 DAY) AND DATAPROCESSING_END_DATE
+    -- TODO: Add a subquery here to select data from the tx.tx table within a 15-day window ending on '2025-08-28'.
+    -- HINT: Use the DATE() and DATE_SUB() functions.
+    -- Example: SELECT * FROM tx.tx WHERE DATE(TX_TS) BETWEEN ... DATE_SUB(...) AND ... 
     ) raw_tx
   LEFT JOIN 
-    `PROJECT_ID.tx.txlabels` as raw_lb --- UPDATE PROJECT_ID
+    tx.txlabels as raw_lb
   ON raw_tx.TX_ID = raw_lb.TX_ID),
+
 
   -- query to calculate CUSTOMER spending behaviour --------------------------------------------------------------------------------
   get_customer_spending_behaviour AS (
@@ -32,41 +32,37 @@ WITH
     TERMINAL_ID,
     TX_AMOUNT,
     TX_FRAUD,
-
+    
     # calc the number of customer tx over minute windows per customer (15, 30 and 60 minutes, expressed in seconds)
+    -- TODO: Follow the given example for 15 min window to calculate no of customer tx for 30 and 60 min windows
     COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 900 PRECEDING
       AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_15MIN_WINDOW,
-    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1800 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_30MIN_WINDOW,
-    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 3600 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_60MIN_WINDOW,
+    -- Add query for 30 min window (use alias CUSTOMER_ID_NB_TX_30MIN_WINDOW) --
+    -- Add query for 60 min window (use alias CUSTOMER_ID_NB_TX_60MIN_WINDOW) --
     
     # calc the number of customer tx over daily windows per customer (1, 7 and 14 days, expressed in seconds)
+    -- TODO: Follow the given example for 1 day window to calculate no of customer tx for 7 and 14 day windows
     COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 86400 PRECEDING
       AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_1DAY_WINDOW,
-    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 604800 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_7DAY_WINDOW,
-    COUNT(TX_FRAUD) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1209600 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_NB_TX_14DAY_WINDOW,
-
+    -- Add query for 7 day window (use alias CUSTOMER_ID_NB_TX_7DAY_WINDOW) --
+    -- Add query for 14 day window (use alias CUSTOMER_ID_NB_TX_14DAY_WINDOW) --
+      
     # calc the customer average tx amount over minute windows per customer (15, 30 and 60 minutes, expressed in seconds, in dollars ($))
+    -- TODO: Follow the given example for 15 min window to calculate avg customer tx for 30 and 60 min windows
     AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 900 PRECEDING
       AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_15MIN_WINDOW,
-    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1800 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_30MIN_WINDOW,
-    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 3600 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_60MIN_WINDOW,
+    -- Add query for 30 min window (use alias CUSTOMER_ID_AVG_AMOUNT_30MIN_WINDOW) --
+    -- Add query for 60 min window (use alias CUSTOMER_ID_AVG_AMOUNT_60MIN_WINDOW) --
       
     # calc the customer average tx amount over daily windows per customer (1, 7 and 14 days, expressed in seconds, in dollars ($))
+    -- TODO: Follow the given example for 1 day window to calculate avg customer tx for 7 and 14 day windows
     AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 86400 PRECEDING
       AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW,
-    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 604800 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW,
-    AVG(TX_AMOUNT) OVER (PARTITION BY CUSTOMER_ID ORDER BY UNIX_SECONDS(TX_TS) ASC RANGE BETWEEN 1209600 PRECEDING
-      AND CURRENT ROW ) AS CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW,
+    -- Add query for 7 day window (use alias CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW) --
+    -- Add query for 14 day window (use alias CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW) --
   FROM get_raw_table)
 
-# Create the table with CUSTOMER features ----------------------------------------------------------------------------
+-- query to create the CUSTOMER features ----------------------------------------------------------------------------
 SELECT
   PARSE_TIMESTAMP("%Y-%m-%d %H:%M:%S", FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", TX_TS, "UTC")) AS feature_ts,
   CUSTOMER_ID AS customer_id,
@@ -81,7 +77,6 @@ SELECT
   CAST(CUSTOMER_ID_AVG_AMOUNT_60MIN_WINDOW AS FLOAT64) AS customer_id_avg_amount_60min_window,
   CAST(CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_1day_window,
   CAST(CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_7day_window,
-  CAST(CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_14day_window,
+  CAST(CUSTOMER_ID_AVG_AMOUNT_14DAY_WINDOW AS FLOAT64) AS customer_id_avg_amount_14day_window
 FROM
-  get_customer_spending_behaviour
-;
+  get_customer_spending_behaviour;

@@ -78,18 +78,18 @@ The goal of this step is to create features, based on historical customer behavi
 ### Data Context
 
 The source dataset contains transaction information including transaction ID, timestamps, customer ID, terminal ID, transaction amounts and fraud labels. The relevant tables for this section are:
-* ``` tx.tx (tx.tx_realtime) ```
-* ``` tx.txlabels (tx.txlabels_realtime) ```
+* ``` tx.tx```
+* ``` tx.txlabels ```
 
 ### Task
 
 Write SQL queries to compute 2 sets of features:
 
-**Query 1: Customer-related features:** describes the spending behaviour of customer within (a) 15, 30 and 60 mins time windows and (b) 1, 7 and 14 days time windows using ***number of transactions*** and ***average amount spent*** in dollars ($).
+**Query 1: Customer-related features:** describes the spending behaviour of customer within (a) 15, 30 and 60 mins time windows and (b) 1, 7 and 14 days time windows using ***number of transactions*** and ***average amount spent in dollars ($)***.
 
-* Complete the customer feature SQL query in the folder ``` C2-FE ```
+* Complete the SQL query to create the customer features view under ``` C2-FE ```
 
-Below is the expected output for this query:
+Below is the expected output view for this query:
 
 | feature_time             | customer_id | customer features |
 | :------------------------- | :---------- | :----------------------- |
@@ -97,13 +97,13 @@ Below is the expected output for this query:
 | 2025-02-02 12:08:40 UTC   | 2           | (e.g., nb_tx, avg_tx)   |
 | 2025-02-03 17:30:48 UTC   | 3           | (e.g., nb_tx, avg_tx)   |
 
-**Query 2: Terminal-related features:** describes the risk of a given terminal to be exposed to fraudulent transactions within the last (a) 15, 30 and 60 mins and (b) 1, 7 and 14 days using ***average number of fraudulent transactions*** in dollars ($), the ***number of transactions*** and ***risk index***. Please note that a delay will need to be added to take into account time that would pass between the time of transaction and the result of fraud investigation or customer claim.
+**Query 2: Terminal risk features:** describes the risk of a given terminal to be exposed to fraudulent transactions within the last (a) 15, 30 and 60 mins and (b) 1, 7 and 14 days using ***average number of fraudulent transactions in dollars ($)***, the ***number of transactions*** and ***risk index***. Please note that a delay will need to be added to take into account time that would pass between the time of transaction and the result of fraud investigation or customer claim.
 
-* Complete the transaction feature SQL query in the folder ``` C2-FE ```
+* Complete the SQL query to create the terminal risk features view under ``` C2-FE ```
 
-Below is the expected output for this query:
+Below is the expected output view for this query:
 
-| feature_time             | terminal_id | terminal features |
+| feature_time             | terminal_id | terminal risk features |
 | :------------------------- | :---------- | :----------------------- |
 | 2025-02-01 17:20:15 UTC   | 12345       | (e.g., risk_x_days)     |
 | 2025-02-02 12:08:40 UTC   | 26789       | (e.g., risk_x_days)     |
