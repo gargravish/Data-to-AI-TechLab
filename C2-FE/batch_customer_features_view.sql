@@ -14,9 +14,9 @@ WITH
     raw_tx.TX_AMOUNT,
     raw_lb.TX_FRAUD
   FROM (
-    -- TODO: Add a subquery here to select data from the tx.tx table for the last 15 day window from current date
-    -- HINT: Use the DATE_SUB() and CURRENT_DATE() functions
-    -- Example: SELECT * FROM tx.tx WHERE DATE(TX_TS) BETWEEN ... DATE_SUB(...) AND ... 
+    -- TODO: Add a subquery here to select data from the tx.tx table for the last 15 days window from current timestamp
+    -- HINT: Use the TIMESTAMP_SUB() and CURRENT_TIMESTAMP() functions
+    -- Example: SELECT * FROM tx.tx WHERE TX_TS BETWEEN ... TIMESTAMP_SUB(...) AND ... 
     ) raw_tx
   LEFT JOIN 
     tx.txlabels as raw_lb

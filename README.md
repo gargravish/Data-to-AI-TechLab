@@ -111,7 +111,7 @@ Below is the expected output view for this query:
 
 **Verify your results by running** 
 ```sql 
-SELECT * FROM <TABLE> LIMIT 10
+SELECT * FROM <VIEW> LIMIT 10
 ```
 
 ## Step 3: Model Development with BigQuery ML (C3)
