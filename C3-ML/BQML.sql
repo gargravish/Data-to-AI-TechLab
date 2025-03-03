@@ -132,181 +132,56 @@ WITH
     centroid_id)
 SELECT
   CONCAT('Cluster#', CAST(centroid_id AS STRING)) AS centroid,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'tx_amount') AS tx_amount,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_1day_window') AS customer_id_nb_tx_1day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_7day_window') AS customer_id_nb_tx_7day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_14day_window') AS customer_id_nb_tx_14day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_1day_window') AS customer_id_avg_amount_1day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_7day_window') AS customer_id_avg_amount_7day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_14day_window') AS customer_id_avg_amount_14day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_15min_window') AS customer_id_nb_tx_15min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_30min_window') AS customer_id_nb_tx_30min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_nb_tx_60min_window') AS customer_id_nb_tx_60min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_15min_window') AS customer_id_avg_amount_15min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_30min_window') AS customer_id_avg_amount_30min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'customer_id_avg_amount_60min_window') AS customer_id_avg_amount_60min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_1day_window') AS terminal_id_nb_tx_1day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_7day_window') AS terminal_id_nb_tx_7day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_14day_window') AS terminal_id_nb_tx_14day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_1day_window') AS terminal_id_risk_1day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_7day_window') AS terminal_id_risk_7day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_14day_window') AS terminal_id_risk_14day_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_15min_window') AS terminal_id_nb_tx_15min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_30min_window') AS terminal_id_nb_tx_30min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_nb_tx_60min_window') AS terminal_id_nb_tx_60min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_15min_window') AS terminal_id_avg_amount_15min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_30min_window') AS terminal_id_avg_amount_30min_window,
-  (
-  SELECT
-    value
-  FROM
-    UNNEST(CLUSTER)
-  WHERE
-    name = 'terminal_id_risk_60min_window') AS terminal_id_avg_amount_60min_window
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'tx_amount') AS tx_amount,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_1day_window') AS customer_id_nb_tx_1day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_7day_window') AS customer_id_nb_tx_7day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_14day_window') AS customer_id_nb_tx_14day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_1day_window') AS customer_id_avg_amount_1day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_7day_window') AS customer_id_avg_amount_7day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_14day_window') AS customer_id_avg_amount_14day_window,
+  (SELECT value  FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_15min_window') AS customer_id_nb_tx_15min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_30min_window') AS customer_id_nb_tx_30min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_nb_tx_60min_window') AS customer_id_nb_tx_60min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_15min_window') AS customer_id_avg_amount_15min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_30min_window') AS customer_id_avg_amount_30min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'customer_id_avg_amount_60min_window') AS customer_id_avg_amount_60min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_1day_window') AS terminal_id_nb_tx_1day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_7day_window') AS terminal_id_nb_tx_7day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_14day_window') AS terminal_id_nb_tx_14day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_1day_window') AS terminal_id_risk_1day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_7day_window') AS terminal_id_risk_7day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_14day_window') AS terminal_id_risk_14day_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_15min_window') AS terminal_id_nb_tx_15min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_30min_window') AS terminal_id_nb_tx_30min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_nb_tx_60min_window') AS terminal_id_nb_tx_60min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_15min_window') AS terminal_id_avg_amount_15min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_30min_window') AS terminal_id_avg_amount_30min_window,
+  (SELECT value FROM UNNEST(CLUSTER)
+  WHERE name = 'terminal_id_risk_60min_window') AS terminal_id_avg_amount_60min_window
 FROM
   T
 ORDER BY
