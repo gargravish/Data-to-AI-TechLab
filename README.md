@@ -127,7 +127,6 @@ Here's a quick breakdown the models supported in BigQuery ML, for the fraud dete
 ### Task
 In this step, you will write sql queries to perform the following tasks in [C3-ML](https://github.com/gargravish/Data-to-AI-TechLab/blob/main/C3-ML/BQML.sql):
 
-* Create a grouth truth table with the fraud labels
 * Join back both the customer-related and terminal risk features to the grouth truth table, narrow down the time period to the past 15 days and split the first 10 days for training and remaining 5 days for testing
 * Use the supervised learning approach
   * train a logistic regression model in BigQuery and register the model in Vertex AI

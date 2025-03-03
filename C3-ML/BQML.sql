@@ -4,39 +4,33 @@
 
 -- Part 1: Organise Training and Prediction Required Data Tables (? mins)
 
--- TODO: Create ground truth table
--- Hint: Pick today's date and go back 15 days as the time coverage
+-- TODO: Create the training data table, covering the first 10 days of the last 15 days from the current timestamp
+-- Hint: Use TIMESTAMP_SUB() and CURRENT_TIMESTAMP() functions
 CREATE OR REPLACE TABLE
-  tx.ground_truth AS (
+  tx.train_data AS (
+  WITH ground_truth AS (
   SELECT
     --select required fields
   FROM
-    tx.tx AS raw_tx
+    tx.tx AS t
   LEFT JOIN
-    tx.txlabels AS raw_lb
+    tx.txlabels AS l
   ON
-    raw_tx.TX_ID = raw_lb.TX_ID
-  WHERE
-    --limit the date range
-    );
-
--- TODO: Create training data table
--- Hint: Include all relevant features from the feature tables 
--- and use the first 10 days as the training period
-CREATE OR REPLACE TABLE
-  tx.train_data AS (
+    t.TX_ID = l.TX_ID
+    )
   SELECT
     --include relevant feature fields
   FROM
-    tx.ground_truth AS gt
+    ground_truth AS gt
+  LEFT JOIN
     --join with feature tables
   WHERE
-    --limit date range
+    --limit the date range  gt.timestamp BETWEEN ... TIMESTAMP_SUB(...) AND ... 
   AND tx_fraud IS NOT NULL);
 
--- TODO: Create prediction data table
--- Hint: Include all relevant features from the feature tables 
--- and use the last 5 days as the training period
+
+-- TODO: Create the testing data table, covering the remaning 5 days of the last 15 days from the current timestamp
+-- Hint: Use TIMESTAMP_SUB() and CURRENT_TIMESTAMP() functions
 CREATE OR REPLACE TABLE
   tx.predict_data AS (
     --complete sql script
@@ -70,8 +64,7 @@ FROM
   --call predict function;
     
 -- TODO: Create a xgboost model
--- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, register the model in Vertex AI    
---use xgboost model
+-- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, use 'class_weights' to handle imbalance, register the model in Vertex AI
 CREATE OR REPLACE MODEL
   tx.fraud_detection_xgboost OPTIONS(
     --specify model options
@@ -125,6 +118,7 @@ FROM
 
 --[Optional]
 -- TODO: List out the feature characteristics for each cluster centroid
+-- Hint: Use ARRAY_AGG() and STRUCT() functions
 WITH
   T AS (
   SELECT
