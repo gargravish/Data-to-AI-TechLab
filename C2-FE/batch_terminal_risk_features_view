@@ -14,8 +14,8 @@ WITH
     raw_tx.TX_AMOUNT,
     raw_lb.TX_FRAUD
   FROM (
-    -- TODO: Add a subquery here to select data from the tx.tx table within a 15-day window ending on '2025-08-28'.
-    -- HINT: Use the DATE() and DATE_SUB() functions.
+    -- TODO: Add a subquery here to select data from the tx.tx table for the last 15 day window from current date
+    -- HINT: Use the DATE_SUB() and CURRENT_DATE() functions
     -- Example: SELECT * FROM tx.tx WHERE DATE(TX_TS) BETWEEN ... DATE_SUB(...) AND ... 
     ) raw_tx
   LEFT JOIN 

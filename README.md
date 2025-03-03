@@ -93,9 +93,9 @@ Below is the expected output view for this query:
 
 | feature_time             | customer_id | customer features |
 | :------------------------- | :---------- | :----------------------- |
-| 2025-02-01 17:20:15 UTC   | 1           | (e.g., nb_tx, avg_tx)   |
-| 2025-02-02 12:08:40 UTC   | 2           | (e.g., nb_tx, avg_tx)   |
-| 2025-02-03 17:30:48 UTC   | 3           | (e.g., nb_tx, avg_tx)   |
+| 2025-03-10 17:20:15 UTC   | 1           | (e.g., nb_tx, avg_tx)   |
+| 2025-03-10 12:08:40 UTC   | 2           | (e.g., nb_tx, avg_tx)   |
+| 2025-03-09 17:30:48 UTC   | 3           | (e.g., nb_tx, avg_tx)   |
 
 **Query 2: Terminal risk features:** describes the risk of a given terminal to be exposed to fraudulent transactions within the last (a) 15, 30 and 60 mins and (b) 1, 7 and 14 days using ***average number of fraudulent transactions in dollars ($)***, the ***number of transactions*** and ***risk index***. Please note that a delay will need to be added to take into account time that would pass between the time of transaction and the result of fraud investigation or customer claim.
 
@@ -105,9 +105,9 @@ Below is the expected output view for this query:
 
 | feature_time             | terminal_id | terminal risk features |
 | :------------------------- | :---------- | :----------------------- |
-| 2025-02-01 17:20:15 UTC   | 12345       | (e.g., risk_x_days)     |
-| 2025-02-02 12:08:40 UTC   | 26789       | (e.g., risk_x_days)     |
-| 2025-02-03 17:30:48 UTC   | 101112      | (e.g., risk_x_days)     |
+| 2025-03-10 17:20:15 UTC   | 12345       | (e.g., risk_x_days)     |
+| 2025-03-10 12:08:40 UTC   | 26789       | (e.g., risk_x_days)     |
+| 2025-03-09 17:30:48 UTC   | 101112      | (e.g., risk_x_days)     |
 
 **Verify your results by running** 
 ```sql 
