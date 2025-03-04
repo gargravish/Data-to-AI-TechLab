@@ -1,5 +1,6 @@
 # Data-to-AI-TechLab
 ## GCP Data to AI Tech Lab Challenge (fraudfinder)
+![image](./images/reference_arch.png)
 
 ## Step 0: Initalisation and Setup
 ### Select your Google Cloud project
@@ -160,7 +161,14 @@ CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+### Setup Pub/Sub to BQ Subscription for Realtime Streaming Data
+- Pub/Sub Topic: `projects/cymbal-fraudfinder/topics/ff-tx`
+![image](./images/PubSub_to_BQ.png)
+
 ### Deploy the model for online predictions
 ![image](./images/VertexAI_Model_Deploy.png)
 - Get the VertexAI Endpoint ID
 - Copy the "./C4-Real-Time Inference/fraud_online_inference.py" for online predictions to BigQuery Notebook and fill-in the required configurations.
+
+### Check BigQuery Table for generated inferences
+![image](./images/Check_BQ_Table.png)
