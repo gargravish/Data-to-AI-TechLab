@@ -211,3 +211,8 @@ CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
 
 ### Check BigQuery Table for generated inferences
 ![image](./images/Check_BQ_Table.png)
+
+---
+<center>END</center>
+
+---
