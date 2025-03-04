@@ -213,6 +213,6 @@ CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
 ![image](./images/Check_BQ_Table.png)
 
 ---
-<div style="text-align: center;">END</div>
+<p align="center">END</p>
 
 ---
