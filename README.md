@@ -65,11 +65,50 @@ create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_
 ```
 ## Step 1: EDA of transaction data in BigQuery (C1)
 
-- Transaction data summary statistics
-- Fraud Classification counts and percentages
-- Plot transaction amount distribution
-- Analyse customer-level aggregates of transaction data
-- Customer and Terminal Analysis
+- ### Basic Transaction Analysis
+This section focuses on understanding the overall structure and distribution of the transaction data.
+ - Key Objectives:
+   - Calculate basic statistics such as the number of transactions, date range, number of customers, and transaction amounts.
+   - Analyze the distribution of fraudulent vs. non-fraudulent transactions.
+ - Example Queries:
+   - Aggregate functions like COUNT, MIN, MAX, and AVG to summarize data.
+   - Use GROUP BY and SAFE_DIVIDE to calculate percentages of fraud.
+
+- ### Amount Distribution Analysis
+This section explores the distribution of transaction amounts and their relationship to fraud.
+ - Key Objectives:
+   - Identify common transaction values by rounding amounts.
+   - Compare transaction amount patterns for fraudulent and non-fraudulent transactions.
+ - Example Queries:
+   - Use ROUND to group transactions by rounded amounts.
+   - Join tx.tx with tx.txlabels to analyze fraud patterns.
+
+- ### Customer Analysis
+This section examines customer behavior to identify high-risk customers.
+ - Key Objectives:
+   - Calculate customer-level metrics such as the number of transactions, average transaction amount, and fraud rate.
+   - Identify customers with unusual transaction patterns or high fraud rates.
+ - Example Queries:
+   - Use GROUP BY CUSTOMER_ID to calculate metrics.
+   - Apply HAVING to filter high-risk customers based on fraud rates.
+
+- ### Terminal Analysis
+This section investigates terminal-level metrics to detect suspicious activity.
+ - Key Objectives:
+   - Calculate metrics such as the number of transactions, average transaction amount, and fraud rate for each terminal.
+   - Identify terminals with high fraud rates.
+ - Example Queries:
+   - Use GROUP BY TERMINAL_ID to calculate metrics.
+   - Apply SAFE_DIVIDE to compute fraud rates.
+
+- ### Bonus Challenge
+For participants who complete the main sections, the following challenges provide additional insights:
+ - Time-Based Patterns:
+   - Analyze transaction patterns by hour or day.
+   - Extract time components from TX_TS and group transactions accordingly.
+ - Suspicious Amount Patterns:
+   - Identify frequently repeated transaction amounts.
+   - Look for patterns in fraud rates for these amounts.
 
 ## Step 2: Feature Engineering (C2)
 
