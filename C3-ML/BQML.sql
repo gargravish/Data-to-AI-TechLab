@@ -117,7 +117,7 @@ FROM
   --call evaluate function;
 
 --[Optional]
--- TODO: List out the feature characteristics for each cluster centroid
+-- TODO: List out the feature characteristics for each cluster centroid and pivot them to separate columns
 -- Hint: Use ARRAY_AGG() and STRUCT() functions
 WITH
   T AS (
