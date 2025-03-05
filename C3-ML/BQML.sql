@@ -2,7 +2,7 @@
 -- Time to complete: ~1 hour 15 minutes
 -- Follow the TODOs and hints to prepare train/predict data and create ML models
 
--- Part 1: Organise Training and Prediction Required Data Tables (? mins)
+-- Part 1: Organise Training and Prediction Required Data Tables (10 mins)
 
 -- TODO: Create the training data table, covering the first 10 days of the last 15 days from the current timestamp
 -- Hint: Use TIMESTAMP_SUB() and CURRENT_TIMESTAMP() functions
@@ -36,7 +36,7 @@ CREATE OR REPLACE TABLE
     --complete sql script
 );
 
--- Part 2: Carry Out Model Training, Evaluation and Prediction through Three Different Model Approaches (? mins)
+-- Part 2: Carry Out Model Training, Evaluation and Prediction through Three Different Model Approaches (30 mins)
 
 -- TODO: Create a logistic regression model
 -- Hint: Pick 'LOGISTIC_REG' model type, register the model in Vertex AI
@@ -64,7 +64,8 @@ FROM
   --call predict function;
     
 -- TODO: Create a xgboost model
--- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, use 'class_weights' to handle imbalance, register the model in Vertex AI
+-- Hint: Pick 'BOOSTED_TREE_CLASSIFIER' model type, use 'hist' tree method to improve training speed, register the model in Vertex AI
+-- Hint: You can use 'class_weights' to handle imbalance, however that will largely increase the training time
 CREATE OR REPLACE MODEL
   tx.fraud_detection_xgboost OPTIONS(
     --specify model options
