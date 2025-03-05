@@ -222,6 +222,9 @@ CREATE TABLE IF NOT EXISTS `{PROJECT_ID}.{Dataset_ID}.online_fraud_prediction`
 - Copy the "./C4-Real-Time Inference/fraud_online_inference.py" for online predictions to BigQuery Notebook and fill-in the required configurations.
 
 ### Check BigQuery Table for generated inferences
+```sql
+SELECT * FROM `tx.online_fraud_prediction` order by created_at desc LIMIT 10
+```
 ![image](./images/Check_BQ_Table.png)
 
 ---
