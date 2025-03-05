@@ -74,12 +74,7 @@ BUCKET_NAME="${PROJECT_ID}-fraudfinder"
 gsutil mb -l $REGION gs://$BUCKET_NAME
 python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 ```
-### Create BigQuery tables for realtime streaming data and Pub/Sub to BQ subscription
-```sql
-create table `{PROJECT_ID}.{Dataset_ID}.txlabels_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.txlabels.txlabels` where 1=0;
 
-create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.tx` where 1=0;
-```
 ## Step 1: EDA of transaction data in BigQuery (C1)
 
 - ### Basic Transaction Analysis
