@@ -181,6 +181,7 @@ class FraudDetectionProcessor:
         # Match the exact schema of the BigQuery table
         rows_to_insert = [{
             'TX_ID': prediction_data['TX_ID'],
+            'prediction_timestamp': prediction_data['TX_TS'],
             'fraud_probability': fraud_probability,
             'is_fraud': bool(fraud_probability > 0.5),
             'model_version': prediction_data['model_version'],
@@ -226,6 +227,7 @@ class FraudDetectionProcessor:
             # Prepare prediction result
             prediction_data = {
                 'TX_ID': message_data['TX_ID'],
+                'TX_TS': message_data['TX_TS'],
                 'fraud_probability': fraud_probability,
                 'model_version': prediction_response.deployed_model_id
             }
