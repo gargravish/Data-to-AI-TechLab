@@ -30,6 +30,10 @@ gcloud services enable iam.googleapis.com
 gcloud pubsub subscriptions create "ff-tx-sub" --topic="ff-tx" --topic-project="cymbal-fraudfinder"
 gcloud pubsub subscriptions create "ff-txlabels-sub" --topic="ff-txlabels" --topic-project="cymbal-fraudfinder"
 
+echo "awaiting completion of service enables"
+sleep 180
+
+
 # Run the following command to grant the Compute Engine default service account access to read and write pipeline artifacts in Google Cloud Storage.
 PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUM=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)")
@@ -46,23 +50,31 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:$PROJECT_NUM-compute@developer.gserviceaccount.com"\
       --role='roles/resourcemanager.projectIamAdmin'
 gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:service-${PROJECT_NUM}@gcp-sa-pubsub.iam.gserviceaccount.com"\
+      --role='roles/bigquery.dataEditor'
+gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:service-${PROJECT_NUM}@gcp-sa-aiplatform.iam.gserviceaccount.com"\
       --role='roles/artifactregistry.writer'
 gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:service-${PROJECT_NUM}@gcp-sa-aiplatform.iam.gserviceaccount.com"\
       --role='roles/storage.objectAdmin'   
 ```
-
+### Clone git repo
+```shell
+git clone https://github.com/gargravish/Data-to-AI-TechLab.git
+```
+### Install required libraries
+```shell
+pip3 install -r requirements.txt
+```
 ### Copy the historical transaction data into BigQuery tables
 ```shell
-$ python3 scripts/copy_bigquery_data.py $BUCKET_NAME
+REGION="us-central1"
+BUCKET_NAME="${PROJECT_ID}-fraudfinder" 
+gsutil mb -l $REGION gs://$BUCKET_NAME
+python3 scripts/copy_bigquery_data.py $BUCKET_NAME
 ```
-### Create BigQuery tables for realtime streaming data and Pub/Sub to BQ subscription
-```sql
-create table `{PROJECT_ID}.{Dataset_ID}.txlabels_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.txlabels.txlabels` where 1=0;
 
-create table `{PROJECT_ID}.{Dataset_ID}.tx_realtime` as SELECT * FROM `{PROJECT_ID}.{Dataset_ID}.tx` where 1=0;
-```
 ## Step 1: EDA of transaction data in BigQuery (C1)
 
 - ### Basic Transaction Analysis
