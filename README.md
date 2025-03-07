@@ -66,8 +66,9 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 ```shell
 git clone https://github.com/gargravish/Data-to-AI-TechLab.git
 ```
-### Install required libraries
+### Navigate to the directory and install required libraries
 ```shell
+cd Data-to-AI-TechLab
 pip3 install -r requirements.txt
 ```
 ### Copy the historical transaction data into BigQuery tables
