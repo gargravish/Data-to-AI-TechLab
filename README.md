@@ -16,6 +16,7 @@ Once the Cloud Shell has activated, copy the following codes and execute them in
 Authorize the Cloud Shell if it prompts you to. Please note that this step may take a few minutes. You can navigate to the Pub/Sub console to verify the subscriptions.
 
 ```shell
+cd Data-to-AI-TechLab
 gcloud services enable notebooks.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable aiplatform.googleapis.com
@@ -29,11 +30,13 @@ gcloud services enable iam.googleapis.com
 
 gcloud pubsub subscriptions create "ff-tx-sub" --topic="ff-tx" --topic-project="cymbal-fraudfinder"
 gcloud pubsub subscriptions create "ff-txlabels-sub" --topic="ff-txlabels" --topic-project="cymbal-fraudfinder"
-
-echo "awaiting completion of service enables"
-sleep 180
-
-
+```
+### Check completion of service enables
+```shell
+gcloud services list --enabled --filter="NAME:(notebooks.googleapis.com OR cloudresourcemanager.googleapis.com OR aiplatform.googleapis.com OR pubsub.googleapis.com OR run.googleapis.com OR cloudbuild.googleapis.com OR dataflow.googleapis.com OR bigquery.googleapis.com OR artifactregistry.googleapis.com OR iam.googleapis.com)"
+```
+### Grant required IAM permissions
+```shell
 # Run the following command to grant the Compute Engine default service account access to read and write pipeline artifacts in Google Cloud Storage.
 PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUM=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)")
