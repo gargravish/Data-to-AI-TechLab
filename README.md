@@ -16,7 +16,6 @@ Once the Cloud Shell has activated, copy the following codes and execute them in
 Authorize the Cloud Shell if it prompts you to. Please note that this step may take a few minutes. You can navigate to the Pub/Sub console to verify the subscriptions.
 
 ```shell
-cd Data-to-AI-TechLab
 gcloud services enable notebooks.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable aiplatform.googleapis.com
